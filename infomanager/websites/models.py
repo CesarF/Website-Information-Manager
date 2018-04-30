@@ -4,49 +4,52 @@ class Site(models.model):
     '''
     Representa un sitio web o aplicación
     '''
-    nombre = models.CharField(unique=True, verbose_name=u'Nombre', max_length=100)
-    dominio = models.CharField(unique=True, verbose_name=u'Dominio', max_length=100)
+    name = models.CharField(unique=True, verbose_name=u'Nombre', max_length=100)
+    domain = models.CharField(unique=True, verbose_name=u'Dominio', max_length=100)
     url_home= models.CharField(unique=True, verbose_name=u'Url', max_length=200)
-    descripcion = models.CharField(verbose_name=u'Descripción', max_length=1000)
-    unidad = models.CharField(verbose_name=u'Unidad responsable', max_length=100)
-    contacto = models.CharField(verbose_name=u'Contacto', max_length=200)
-    resp_tecnico = models.CharField(verbose_name=u'Responsable técnico', max_length=200)
-    resp_actualizacion = models.CharField(verbose_name=u'Responsable actualización', max_length=200)
-    fecha_creacion = models.DateTimeField(verbose_name=u'Fecha creación')
-    fecha_actualizacion = models.DateTimeField(verbose_name=u'Fecha actualización')
-    emp_desarrolladora = models.ForeignKey(ServiceProvider, verbose_name=u'Empresa desarrolladora', max_length=200)
-    emp_mantenimiento =models.ForeignKey(ServiceProvider, verbose_name=u'Empresa mantenimiento', max_length=200)
-    fecha_fin_contrato = models.DateTimeField(verbose_name=u'Fecha fin del contrato')
-    tamagno = models.IntegerField( verbose_name=u'Tamaño (#páginas)')
-    visitas = models.IntegerField( verbose_name=u'Visitas')
+    description = models.CharField(verbose_name=u'Descripción', max_length=1000)
+    unit = models.CharField(verbose_name=u'Unidad responsable', max_length=100)
+    contact = models.CharField(verbose_name=u'Contacto', max_length=200)
+    tech_resp = models.CharField(verbose_name=u'Responsable técnico', max_length=200)
+    update_resp = models.CharField(verbose_name=u'Responsable actualización', max_length=200)
+    creation_date = models.DateTimeField(verbose_name=u'Fecha creación')
+    last_update_date = models.DateTimeField(verbose_name=u'Fecha actualización')
+    developer = models.ForeignKey(ServiceProvider, verbose_name=u'Empresa desarrolladora', max_length=200)
+    maintainer =models.ForeignKey(ServiceProvider, verbose_name=u'Empresa mantenimiento', max_length=200)
+    contract_end_date = models.DateTimeField(verbose_name=u'Fecha fin del contrato')
+    size = models.IntegerField( verbose_name=u'Tamaño (#páginas)')
+    visits = models.IntegerField( verbose_name=u'Visitas')
     analytics = models.CharField(verbose_name=u'Analytics', max_length=100)
-    autenticacion =models.BooleanField(default=True, verbose_name=u'Tiene autenticación')
-    tipo = models.ForeignKey(SiteType, verbose_name=u'Tipo de sitio', blank=True, null=True)
-    tipo_contenido = models.ForeignKey(ContentType, verbose_name=u'Tipo de contenido', blank=True, null=True)
-    estado = models.ForeignKey(State, verbose_name=u'Estado', blank=True, null=True)
-    categoria = models.ForeignKey(Category, verbose_name=u'Categoría', blank=True, null=True)
-    ##IMAGEN
+    authentication =models.BooleanField(default=True, verbose_name=u'Tiene autenticación')
+    site_type = models.ForeignKey(SiteType, verbose_name=u'Tipo de sitio', blank=True, null=True)
+    content_type = models.ForeignKey(ContentType, verbose_name=u'Tipo de contenido', blank=True, null=True)
+    state = models.ForeignKey(State, verbose_name=u'Estado', blank=True, null=True)
+    category = models.ForeignKey(Category, verbose_name=u'Categoría', blank=True, null=True)
     #SERVICIOS INTERNOS INTEGRADOS, SERVICIOS EXTERNOS INTEGRADOS
-    servicios = models.ManyToManyField(Service, blank=True, null=True)
-    ubicacion = models.ForeignKey(Location, verbose_name=u'Ubicación sitio desplegado', blank=True, null=True)
-    tecnologias = models.ManyToManyField(Technology, blank=True, null=True)
-    disegno = models.CharField(verbose_name=u'Diseño', max_length=1000)
-    #AUDICIENCIAS
-    #tickets
-    #observacion
+    services = models.ManyToManyField(Service, verbose_name=u'Servicios',  blank=True, null=True)
+    location = models.ForeignKey(Location, verbose_name=u'Ubicación sitio desplegado', blank=True, null=True)
+    Technology = models.ManyToManyField(Technology, verbose_name=u'Tecnologías', blank=True, null=True)
+    design = models.CharField(verbose_name=u'Diseño', max_length=1000)
+    audiences = models.ManyToManyField(Audience, verbose_name=u'Audiencias', blank=True, null=True)
+    additional_info = models.CharField(verbose_name=u'Observaciones', max_length=1000)
+    image = models.CharField(verbose_name=u'Imagen', max_length=1000)
+    #TODO PROBLEMAS
 
     def natural_key(self):
-        return dict(dominio=self.dominio, nombre=self.nombre, url=self.url_home)
+        return dict(domain=self.domain, name=self.name, url=self.url_home)
 
     class Meta:
         verbose_name = u'Sitio'
         verbose_name_plural = u'Sitios'
-        unique_together = ('nombre', 'dominio', 'url_home')
+        unique_together = ('name', 'domain', 'url_home')
 
     def __unicode__(self):
-        return self.nombre + '_' + self.dominio
+        return self.name + '_' + self.domain
 
 class SiteType(models.model):
+    '''
+    Representa el tipo de sitio web o aplicación. Ejemplo: Sitio, Aplicación, Cotenido dinámico
+    '''
     type = models.CharField(unique=True, verbose_name=u'Tipo', max_length=100)
 
     def natural_key(self):
@@ -60,6 +63,9 @@ class SiteType(models.model):
         return self.type
 
 class ContentType(models.model):
+    '''
+    Representa el tipo de contenido de los sitios. Ejemplo: contenido estático, contenido dinámico
+    '''
     type = models.CharField(unique=True, verbose_name=u'Tipo', max_length=100)
 
     def natural_key(self):
@@ -73,6 +79,9 @@ class ContentType(models.model):
         return self.type
 
 class State(models.model):
+    '''
+    Representa el estado que puede tener un sitio. Ejemplo: Activo, actualizado, abandonado
+    '''
     state = models.CharField(unique=True, verbose_name=u'Estado', max_length=100)
 
     def natural_key(self):
@@ -86,6 +95,9 @@ class State(models.model):
         return self.state
 
 class Category(models.model):
+    '''
+    Representa la categoría de los sitios. Ejemplo: Proyecto, Evento, Unidad académica
+    '''
     category = models.CharField(unique=True, verbose_name=u'Categoría', max_length=100)
 
     def natural_key(self):
@@ -99,14 +111,17 @@ class Category(models.model):
         return self.category
 
 class Service(models.model):
-    nombre = models.CharField(verbose_name=u'Nombre del servicio', max_length=100)
-    descripcion = models.CharField(verbose_name=u'Descripción', max_length=1000)
-    proveedor = models.ForeignKey(ServiceProvider, verbose_name=u'Proveedor', blank=True, null=True)
+    '''
+    Representa los servicios de los que hace uso la aplicación, ya sean internos como integración con banner, o externos como servicios en la nube.
+    '''
+    name = models.CharField(verbose_name=u'Nombre del servicio', max_length=100)
+    description = models.CharField(verbose_name=u'Descripción', max_length=1000)
+    provider = models.ForeignKey(ServiceProvider, verbose_name=u'Proveedor', blank=True, null=True)
     es_externo =models.BooleanField(default=False, verbose_name=u'Es externo')
-    sitios = models.ManyToManyField(Site, blank=True, null=True)
+    sitios = models.ManyToManyField(Site, verbose_name=u'Sitios', blank=True, null=True)
 
     def natural_key(self):
-        return dict(nombre=self.nombre, proveedor=self.proveedor.nombre)
+        return dict(name=self.name, provider=self.provider.name)
 
     class Meta:
         verbose_name = u'Servicio Integrado'
@@ -114,43 +129,86 @@ class Service(models.model):
 
 
 class ServiceProvider(models.model):
-    nombre = models.CharField(unique=True, verbose_name=u'Nombre del proveedor', max_length=100)
-    descripcion = models.CharField(verbose_name=u'Descripción del proveedor', max_length=1000)
+    '''
+    Representa la compañia o departamento que brinda el servicio
+    '''
+    name = models.CharField(unique=True, verbose_name=u'Nombre del proveedor', max_length=100)
+    description = models.CharField(verbose_name=u'Descripción del proveedor', max_length=1000)
 
     def natural_key(self):
-        return dict(nombre=self.nombre)
+        return dict(name=self.name)
 
     class Meta:
         verbose_name = u'Proveedor'
         verbose_name_plural = u'Proveedores'
 
     def __unicode__(self):
-        return self.nombre
+        return self.name
 
 class Location(models.model):
-    direccion = models.CharField(verbose_name=u'Dirección', max_length=100)
-    proveedor = models.ForeignKey(ServiceProvider, verbose_name=u'Proveedor', blank=True, null=True)
+    '''
+    Ubicación donde se encuentra el sitio desplegado
+    '''
+    location = models.CharField(verbose_name=u'Ubicación del sitio', max_length=100)
+    provider = models.ForeignKey(ServiceProvider, verbose_name=u'Proveedor', blank=True, null=True)
 
     def natural_key(self):
-        return dict(nombre=self.direccion, proveedor=self.proveedor.nombre)
+        return dict(location=self.location, provider=self.provider.name)
 
     class Meta:
         verbose_name = u'Ubicación'
         verbose_name_plural = u'Ubicaciones'
 
     def __unicode__(self):
-        return self.direccion
+        return self.location
 
 class Technology(models.model)
-    nombre = models.CharField(verbose_name=u'Nombre', max_length=100)
+    '''
+    Tecnologías que son usadas por los sitios
+    '''
+    name = models.CharField(verbose_name=u'Nombre', max_length=100)
     version = models.CharField(verbose_name=u'Versión', max_length=100)
+    sites = models.ManyToManyField(Site, verbose_name=u'Sitios', blank=True, null=True)
+    type = models.ForeignKey(TechnologyType, verbose_name=u'Tipo de tecnología', blank=True, null=True)
 
     def natural_key(self):
-        return dict(nombre=self.nombre, version=self.version)
+        return dict(name=self.name, version=self.version)
 
     class Meta:
         verbose_name = u'Tecnología'
         verbose_name_plural = u'Tecnologías'
 
     def __unicode__(self):
-        return self.nombre + '_' + self.version
+        return self.name + '_' + self.version
+
+class TechnologyType(models.model)
+    '''
+    Tipos de tecnologías usadas en los sitios. Ejemplo: framework web, plugin, SEO
+    '''
+    type = models.CharField(verbose_name=u'Type', max_length=100)
+
+    def natural_key(self):
+        return dict(type=self.type)
+
+    class Meta:
+        verbose_name = u'Tipo de tecnología'
+        verbose_name_plural = u'Tipos de tecnologías'
+
+    def __unicode__(self):
+        return self.type
+
+class Audience(models.model)
+    '''
+    Audiencias de los sitios. Ejemplo: estudiantes, graduados, público en general
+    '''
+    name = models.CharField(verbose_name=u'Nombre', max_length=100)
+
+    def natural_key(self):
+        return dict(name=self.name)
+
+    class Meta:
+        verbose_name = u'Audiencia'
+        verbose_name_plural = u'Audiencias'
+
+    def __unicode__(self):
+        return self.name

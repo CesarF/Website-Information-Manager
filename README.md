@@ -15,6 +15,7 @@ python -m django --version
 pip install -r requeriments.txt
 ```
 * Crear la base de datos. Solo en caso que no esté usando la misma base de datos sqlite presente en el proyecto
+* Ejecutar el migrate para que se creen las tablas o se actualice la base de datos con los nuevos cambios
 ```
 python manage.py migrate
 ```

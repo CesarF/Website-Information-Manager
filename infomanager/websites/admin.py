@@ -12,4 +12,4 @@ admin.site.register(Location)
 admin.site.register(TechnologyType)
 admin.site.register(Technology)
 admin.site.register(Audience)
-admin.site.register(Site)s
+admin.site.register(Site)

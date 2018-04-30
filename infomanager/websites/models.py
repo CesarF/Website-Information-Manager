@@ -2,7 +2,7 @@ from django.db import models
 
 class Site(models.model):
     '''
-    Representa un curso en un plan de estudios de un estudiante concreto
+    Representa un sitio web o aplicación
     '''
     nombre = models.CharField(unique=True, verbose_name=u'Nombre', max_length=100)
     dominio = models.CharField(unique=True, verbose_name=u'Dominio', max_length=100)
@@ -26,13 +26,11 @@ class Site(models.model):
     estado = models.ForeignKey(State, verbose_name=u'Estado', blank=True, null=True)
     categoria = models.ForeignKey(Category, verbose_name=u'Categoría', blank=True, null=True)
     ##IMAGEN
-
-    #SERVICIOS INTERNOS INTEGRADOS
-    #SERVICIOS EXTERNOS INTEGRADOS
+    #SERVICIOS INTERNOS INTEGRADOS, SERVICIOS EXTERNOS INTEGRADOS
     servicios = models.ManyToManyField(Service, blank=True, null=True)
-    #UBICACIÓN SITIO DESPLEGADO
-	#TECNOLOGIAS
-	#DISEÑO
+    ubicacion = models.ForeignKey(Location, verbose_name=u'Ubicación sitio desplegado', blank=True, null=True)
+    tecnologias = models.ManyToManyField(Technology, blank=True, null=True)
+    disegno = models.CharField(verbose_name=u'Diseño', max_length=1000)
     #AUDICIENCIAS
     #tickets
     #observacion
@@ -116,8 +114,8 @@ class Service(models.model):
 
 
 class ServiceProvider(models.model):
-    nombre = models.CharField(unique=True, verbose_name=u'Nombre del servicio', max_length=100)
-    descripcion = models.CharField(verbose_name=u'Descripción del servicio', max_length=1000)
+    nombre = models.CharField(unique=True, verbose_name=u'Nombre del proveedor', max_length=100)
+    descripcion = models.CharField(verbose_name=u'Descripción del proveedor', max_length=1000)
 
     def natural_key(self):
         return dict(nombre=self.nombre)
@@ -128,3 +126,31 @@ class ServiceProvider(models.model):
 
     def __unicode__(self):
         return self.nombre
+
+class Location(models.model):
+    direccion = models.CharField(verbose_name=u'Dirección', max_length=100)
+    proveedor = models.ForeignKey(ServiceProvider, verbose_name=u'Proveedor', blank=True, null=True)
+
+    def natural_key(self):
+        return dict(nombre=self.direccion, proveedor=self.proveedor.nombre)
+
+    class Meta:
+        verbose_name = u'Ubicación'
+        verbose_name_plural = u'Ubicaciones'
+
+    def __unicode__(self):
+        return self.direccion
+
+class Technology(models.model)
+    nombre = models.CharField(verbose_name=u'Nombre', max_length=100)
+    version = models.CharField(verbose_name=u'Versión', max_length=100)
+
+    def natural_key(self):
+        return dict(nombre=self.nombre, version=self.version)
+
+    class Meta:
+        verbose_name = u'Tecnología'
+        verbose_name_plural = u'Tecnologías'
+
+    def __unicode__(self):
+        return self.nombre + '_' + self.version
